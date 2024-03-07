@@ -5,8 +5,6 @@ import { getFirestore, collection, getDocs, query, orderBy, limit } from 'fireba
 import { useEffect } from 'react';
 import { useState } from 'react';
 
-import { useAuthState } from 'react-firebase-hooks/auth';
-
 const firebaseConfig = {
   apiKey: "AIzaSyBdZahUPvZRzgQgUHyIQ8oFPEZ801QIIRw",
   authDomain: "fb-docs-tutorial.firebaseapp.com",
@@ -36,7 +34,7 @@ const SignIn = () => {
 }
 
 const SignOut = () => {
-  return auth.currentUser && <button onClick={() => auth.signOut()}>Sign Out</button>;
+  return <button onClick={() => auth.signOut()}>Sign Out</button>;
 }
 
 const ChatMessage = ({ message }) => {
@@ -70,13 +68,13 @@ const ChatRoom = () => {
 };
 
 function App() {
-  const [user] = useAuthState(auth);
+  const user = auth.currentUser;
 
   return (
     <div className='App'>
       <header>
         <h1>⚛️🔥💬</h1>
-        <SignOut />
+        {user && <SignOut />}
       </header>
 
       <section>
