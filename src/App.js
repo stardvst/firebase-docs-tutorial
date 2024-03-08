@@ -1,7 +1,8 @@
 import React from 'react';
+import './App.css';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getFirestore, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useState } from 'react';
 
@@ -40,7 +41,14 @@ const SignOut = () => {
 }
 
 const ChatMessage = ({ message }) => {
-  return <p>{message}</p>;
+  const { text, uid, photoURL } = message;
+  const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
+  return (
+    <div className={`message ${messageClass}`}>
+      <img src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} alt={'profile pic'} />
+      <p>{text}</p>
+    </div>
+  );
 }
 
 const ChatRoom = () => {
@@ -57,15 +65,49 @@ const ChatRoom = () => {
     return messages;
   }
 
+  const sendMessage = async (text) => {
+    if(!auth.currentUser) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
+    const { uid, photoURL } = auth.currentUser;
+    console.log(uid, photoURL, db);
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        text,
+        createdAt: serverTimestamp(),
+        uid,
+        photoURL
+      });
+    } catch(error) {
+      console.error("Error sending message:", error);
+    }
+
+    setFormMessage('');
+  }
+
+  const [formMessage, setFormMessage] = useState('');
   const [messages, setMessages] = useState([]);
   useEffect(() => {
     getMessages().then(setMessages).catch(console.error);
   }, []);
 
   return (
-    <div>
-      {messages && messages.map((message, idx) => (<ChatMessage key={idx} message={message.text} />))}
-    </div>
+    <React.Fragment>
+      <div>
+        {messages && messages.map((message, idx) => (<ChatMessage key={idx} message={message} />))}
+      </div>
+
+      <form onSubmit={e => {
+        e.preventDefault();
+        sendMessage(formMessage);
+      }}>
+        <input type="text" value={formMessage} onChange={e => setFormMessage(e.target.value)} />
+        <button type="submit">🕊️</button>
+      </form>
+    </React.Fragment>
   )
 };
 
