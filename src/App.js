@@ -36,7 +36,7 @@ const SignIn = () => {
 }
 
 const SignOut = () => {
-  return auth.currentUser && <button onClick={() => auth.signOut()}>Sign Out</button>;
+  return <button onClick={() => auth.signOut()}>Sign Out</button>;
 }
 
 const ChatMessage = ({ message }) => {
@@ -76,7 +76,7 @@ function App() {
     <div className='App'>
       <header>
         <h1>⚛️🔥💬</h1>
-        <SignOut />
+        {auth.currentUser && <SignOut />}
       </header>
 
       <section>
