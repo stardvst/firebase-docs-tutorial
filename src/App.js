@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useRef } from 'react';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdZahUPvZRzgQgUHyIQ8oFPEZ801QIIRw",
@@ -85,19 +86,28 @@ const ChatRoom = () => {
       console.error("Error sending message:", error);
     }
 
+    setMessages([...messages, { text, uid, photoURL }]);
     setFormMessage('');
   }
 
+  const dummy = useRef();
+
   const [formMessage, setFormMessage] = useState('');
   const [messages, setMessages] = useState([]);
+
   useEffect(() => {
     getMessages().then(setMessages).catch(console.error);
   }, []);
+
+  useEffect(() => {
+    dummy.current.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
     <React.Fragment>
       <div>
         {messages && messages.map((message, idx) => (<ChatMessage key={idx} message={message} />))}
+        <div ref={dummy}></div>
       </div>
 
       <form onSubmit={e => {
