@@ -1,18 +1,9 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
 
-const Filter = require('bad-words');
-const filter = new Filter();
-
-exports.detectEvilUsers = functions.firestore.document('/messages/{msgId}').onCreate((snapshot, context) => {
-  const message = snapshot.data();
-  const text = message.text;
-  const uid = message.uid;
-  console.log('New message created:', text, uid);
-
-  if(filter.isProfane(text)) {
-    const cleaned = filter.clean(text);
-    console.log(cleaned);
-  }
-});
+exports.makeUppercase = functions.firestore.document('/messages/{documentId}')
+  .onCreate((snap, context) => {
+    const original = snap.data().original;
+    console.log('Uppercasing', context.params.documentId, original);
+    const uppercase = original.toUpperCase();
+    return snap.ref.set({ uppercase }, { merge: true });
+  });
