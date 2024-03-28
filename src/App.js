@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getFirestore, collection, getDocs, query, orderBy, limit, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider, signInWithPopup, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, collection, getDocs, query, orderBy, limit, addDoc, serverTimestamp, connectFirestoreEmulator } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useState } from 'react';
 
@@ -21,7 +21,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+connectAuthEmulator(auth, "http://127.0.0.1:9099");
+
 const db = getFirestore(app);
+connectFirestoreEmulator(db, '127.0.0.1', 8080);
 
 const SignIn = () => {
   const singInWithGoogle = () => {
