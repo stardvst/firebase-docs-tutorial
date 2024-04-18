@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, connectAuthEmulator } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, connectAuthEmulator, signOut } from 'firebase/auth';
 import { getFirestore, collection, getDocs, query, orderBy, limit, addDoc, serverTimestamp, connectFirestoreEmulator } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -41,7 +41,16 @@ const SignIn = () => {
 }
 
 const SignOut = () => {
-  return <button onClick={() => auth.signOut()}>Sign Out</button>;
+  const signOutGlobally = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Sign-out successful");
+      })
+      .catch(err => {
+        console.log("Error signing out:", err);
+      });
+  }
+  return <button onClick={signOutGlobally}>Sign Out</button>;
 }
 
 const ChatMessage = ({ message }) => {
